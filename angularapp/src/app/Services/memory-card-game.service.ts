@@ -29,7 +29,9 @@ export class MemoryCardGameService {
   constructor(
     private http: HttpClient,
     private toastr: ToastrService
-  ) { }
+  ) {
+    this.initiateSignalrConnection();
+  }
 
   async initiateSignalrConnection(): Promise<void> {
     try {
@@ -38,15 +40,17 @@ export class MemoryCardGameService {
         .withUrl(this.baseHubUrlConnection)
         .withAutomaticReconnect()
         .build();
+      let parent = this;
+      await this.signalRConnection.start({ withCredentials: false }).then(async function () {
+        // Set up event handlers for incoming messages
+        await parent.setupEventHandlers();
 
-      await this.signalRConnection.start({ withCredentials: false });
+        //Handle Message for sucessfully SignalR Connection
+        parent.toastr.success(`SignalR Connected Sucessfully. ConnectionId: ${parent.signalRConnection.connectionId}`);
+        console.log(`SignalR Connected Sucessfully. ConnectionId: ${parent.signalRConnection.connectionId}`);
 
-      // Set up event handlers for incoming messages
-      this.setupEventHandlers();
+      });
 
-      //Handle Message for sucessfully SignalR Connection
-      this.toastr.success(`SignalR Connected Sucessfully. ConnectionId: ${this.signalRConnection.connectionId}`);
-      console.log(`SignalR Connected Sucessfully. ConnectionId: ${this.signalRConnection.connectionId}`);
     }
     catch (error) {
       //Handle Message for error in SignalR Connection
@@ -55,7 +59,7 @@ export class MemoryCardGameService {
     }
   }
 
-  private setupEventHandlers(): void {
+  private async setupEventHandlers(): Promise<void> {
     // Handle events received from SignalR server
     this.signalRConnection.on('playerJoined', (data: any) => {
       this.playerJoinedSubscriber.next(data);

@@ -51,6 +51,12 @@ export class GameComponent implements OnInit, OnDestroy {
           this.winnerHandler(card, winner);
         }
       );
+    this.memoryCardGameService.flipCardSubscriber.subscribe((data: any) => {
+      let containerReference = document.getElementById('card-' + data.id);
+      containerReference?.classList.add('flip');
+      containerReference?.classList.add('match');
+    });
+    this.resetFlip();
   }
 
   ngOnDestroy(): void {
@@ -131,13 +137,9 @@ export class GameComponent implements OnInit, OnDestroy {
       );
     }
 
-    this.memoryCardGameService.flipCardSubscriber.subscribe((data: any) => {
-      let containerReference = document.getElementById('card-' + data.id);
-      containerReference?.classList.add('flip');
-      containerReference?.classList.add('match');
-    });
 
-    this.resetFlip();
+
+
   }
 
   resetFlip() {
@@ -155,9 +157,11 @@ export class GameComponent implements OnInit, OnDestroy {
     // Handle showMatch event
     // Update UI, display messages, etc.
     console.log(`Match found! Card: ${card}, Winner: ${winner}`);
-    const cardElement = document.getElementById(card.id);
+    const cardElement = document.getElementById(card.name);
+    const cardPair = document.getElementById("card-" + card.Pair) as HTMLElement;
     if (cardElement) {
       cardElement.classList.add('match');
+      //cardPair.classList.add("match");
     }
 
     const alertElement = document.getElementById('alert');
@@ -179,14 +183,23 @@ export class GameComponent implements OnInit, OnDestroy {
         winsElement.innerHTML += `<li><img src='${card.image}' width='30' height='30'></li>`;
       }
     }
+    this.removeElementsByClass("match");
+  }
+  removeElementsByClass(className: string) {
+    const elements = document.getElementsByClassName(className) as HTMLCollectionOf<HTMLDivElement>;
+    while (elements.length > 0) {
+      elements[0].parentNode?.removeChild(elements[0]);
+    }
   }
   winnerHandler(card: any, winner: string): void {
     // Handle showMatch event
     // Update UI, display messages, etc.
     console.log(`Match found! Card: ${card}, Winner: ${winner}`);
-    const cardElement = document.getElementById(card.id);
+    const cardElement = document.getElementById(card.id) as HTMLElement;
+    const cardPair = document.getElementById("#card-" + card.Pair) as HTMLElement;
     if (cardElement) {
       cardElement.classList.add('match');
+      cardPair.classList.add('match');
     }
 
     const alertElement = document.getElementById('alert');
@@ -226,6 +239,7 @@ export class GameComponent implements OnInit, OnDestroy {
     this.unsubscribe(this.playerExistsSubscription);
     this.unsubscribe(this.waitingListSubscription);
     this.unsubscribe(this.showMatchSubscription);
+    this.unsubscribe(this.winnerSubscription);
   }
 
   private unsubscribe(subscription: Subscription) {

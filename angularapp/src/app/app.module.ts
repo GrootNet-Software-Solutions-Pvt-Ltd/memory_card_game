@@ -25,12 +25,12 @@ import { ToastrModule } from 'ngx-toastr';
     ],
     providers: [
         MemoryCardGameService,
-        {
-            provide: APP_INITIALIZER,
-            useFactory: (signalrService: MemoryCardGameService) => () => signalrService.initiateSignalrConnection(),
-            deps: [MemoryCardGameService],
-            multi: true,
-        }
+        // {
+        //     provide: APP_INITIALIZER,
+        //     useFactory: (signalrService: MemoryCardGameService) => () => signalrService.initiateSignalrConnection(),
+        //     deps: [MemoryCardGameService],
+        //     multi: true,
+        // }
     ],
     bootstrap: [AppComponent]
 })
