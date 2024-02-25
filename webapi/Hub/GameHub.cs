@@ -109,7 +109,7 @@ public class GameHub : Hub<IGameHub>
                     game.LastCard = null;
                   await  Clients.Group(player.Group).showMatch(card, userName);
 
-                    if (player.Matches.Count >= 16)
+                    if (player.Matches.Count >= 12)
                     {
                         await Clients.Group(player.Group).winner(card, userName);
                         _gameState.ResetGame(game);
