@@ -15,7 +15,7 @@ public class Board
     public Board()
     {
         int imgIndex = 1;
-        for (int i = 1; i <= 30; i++)
+        for (int i = 1; i <= 20; i++)
         {
             if (IsOdd(i))
                 _pieces.Add(new Card()
